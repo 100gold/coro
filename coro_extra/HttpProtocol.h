@@ -85,7 +85,7 @@ public:
 			}
 		} else {
 			if (contentLength > 0) {
-				*(it+contentLength);
+				*(it+(contentLength-1));
 				Buffer::Iterator b = it;
 				Buffer::Iterator e = it+contentLength;
 				body.pushBack(b, e);
@@ -95,14 +95,14 @@ public:
 				while (true) {
 					bool isAll = false;
 					try {
-						isAll = bodyEnd+1 == end;
+						*(bodyEnd+1);
 					} catch(...) {
 						isAll = true;
 					}
 					if (isAll) {
 						*bodyEnd;
 						Buffer::Iterator b = it;
-						Buffer::Iterator e = bodyEnd;
+						Buffer::Iterator e = bodyEnd+1;
 						body.pushBack(b, e);
 						it = bodyEnd;
 						break;
