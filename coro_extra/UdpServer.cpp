@@ -32,7 +32,7 @@ UdpServerConnection::~UdpServerConnection() {
 	}
 }
 
-void UdpServerConnection::send(std::unique_ptr<Buffer> buffer) {
+void UdpServerConnection::send(Buffer* buffer) {
 	_server->_socket.send(*buffer, _endpoint);
 }
 

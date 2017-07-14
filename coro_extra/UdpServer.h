@@ -20,7 +20,7 @@ public:
 	UdpServerConnection& operator=(const UdpServerConnection& other) = delete;
 	UdpServerConnection& operator=(UdpServerConnection&& other);
 
-	void send(std::unique_ptr<Buffer> buffer);
+	void send(Buffer* buffer);
 	std::unique_ptr<Buffer> receive();
 
 	asio::ip::address_v4 remoteAddress() const {
