@@ -28,7 +28,8 @@ UdpServerConnection::UdpServerConnection(UdpServerConnection&& other)
 
 UdpServerConnection::~UdpServerConnection() {
 	if (_server) {
-		assert(_server->_inputQueues.erase(_endpoint));
+		auto r = _server->_inputQueues.erase(_endpoint);
+		assert(r);
 	}
 }
 
