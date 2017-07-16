@@ -3,6 +3,7 @@
 #include "coro_extra/Buffer.h"
 #include "coro_extra/HttpParsers.h"
 #include <boost/algorithm/string.hpp>
+#include <boost/format.hpp>
 
 class HttpProtocol {
 public:
@@ -27,13 +28,8 @@ public:
 			throw std::runtime_error("Invalid HTTP url");
 		};
 
-		buffer.pushBack("GET ");
-		buffer.pushBack(parsedUrl.get_path());
-		buffer.pushBack(" HTTP/1.1\r\n");
-
-		buffer.pushBack("Host: ");
-		buffer.pushBack(parsedUrl.host);
-		buffer.pushBack("\r\n");
+		std::string hstr = (boost::format("GET %1% HTTP/1.1\r\nHost: %2%\r\n") % parsedUrl.get_path() % parsedUrl.host).str();
+		buffer.pushBack(hstr.begin(), hstr.end());
 
 		for(const auto& header : headers) {
 			buffer.pushBack(header.first);
@@ -44,6 +40,27 @@ public:
 
 		buffer.pushBack("\r\n");
 	};
+
+	void writePOST(const std::string& url, const HttpHeaders& headers, size_t contentLength, Buffer& buffer) {
+		HttpUrl parsedUrl;
+		HttpUrlParser<decltype(url.begin())> parser;
+		if (!boost::spirit::qi::parse(url.begin(), url.end(), parser, parsedUrl)) {
+			throw std::runtime_error("Invalid HTTP url");
+		};
+
+		std::string hstr = (boost::format("POST %1% HTTP/1.1\r\nHost: %2%\r\nContent-Length: %3%\r\n") %
+			parsedUrl.get_path() % parsedUrl.host % contentLength).str();
+		buffer.pushBack(hstr.begin(), hstr.end());
+
+		for(const auto& header : headers) {
+			buffer.pushBack(header.first);
+			buffer.pushBack(": ");
+			buffer.pushBack(header.second);
+			buffer.pushBack("\r\n");
+		}
+
+		buffer.pushBack("\r\n");
+	}
 
 	template<typename Iterator>
 	Buffer::Iterator readResponse(const Iterator& begin, const Iterator& end, Buffer& body) {

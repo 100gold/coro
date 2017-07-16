@@ -121,7 +121,6 @@ public:
 			}
 		}
 
-		printf("%s\n", resp.data());
 		FcgiResponseParser<std::string::iterator> parser;
 		FcgiResponse result;
 		auto respit = resp.begin();
